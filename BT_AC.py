@@ -529,7 +529,7 @@ def check_empty(proboard):
 	return False
 
 
-def solveSudoku9x9(board,proboard,it,cages,cells,t1):
+def solve(board,proboard,it,cages,cells):
 	#print("into function",it)
 	#print("board",board)
 	
@@ -548,7 +548,7 @@ def solveSudoku9x9(board,proboard,it,cages,cells,t1):
 
 	# print("board",board)
 	if (board[row][col] > 0):
-		(b,OB)=solveSudoku9x9(board,proboard,it+1,cages,cells,t1)
+		(b,OB)=solve(board,proboard,it+1,cages,cells)
 		if(b):
 			# board=copy.deepcopy(boardcopy
 			# proboard=copy.deepcopy(probcopy)
@@ -571,11 +571,7 @@ def solveSudoku9x9(board,proboard,it,cages,cells,t1):
 	boardcopy=copy.deepcopy(board)
 	cagescopy=copy.deepcopy(cages)
 	rep_update(board,proboard,cages,cells)
-	# if(t.time()-t1>10):
-	# 	print("final board",board)
-	# 	# print("final proboard",proboard)
-	# 	print("it",it,"\n\n\n\n")
-	# 	t1=t.time()
+	
 	if type(proboard[row][col]) is list:
 		#print("list")
 		if (len(proboard[row][col]) == 0):
@@ -613,7 +609,7 @@ def solveSudoku9x9(board,proboard,it,cages,cells,t1):
 			if( probcopy[row][col]==0 | probcopy[row][col]==[]):
 				return (False,None)
 			# print("probs copy",probcopy)
-			(b,OB)=solveSudoku9x9(boardcopy,probcopy,it+1,cagescopy,cells,t1)
+			(b,OB)=solve(boardcopy,probcopy,it+1,cagescopy,cells)
 			if (b):
 				#print(" it {} ,True\n\n\n\n\n\n\n\n".format(it))
 				board=copy.copy(boardcopy)
@@ -631,7 +627,7 @@ def solveSudoku9x9(board,proboard,it,cages,cells,t1):
 			cagescopy=copy.deepcopy(cages)
 			# //cout << "(" << row << "," << col << ") =>" << n << endl;
 			# boardcopy[row][col] = n;
-			(b,OB)=solveSudoku9x9(boardcopy,probcopy,it+1,cagescopy,cells,t1)
+			(b,OB)=solve(boardcopy,probcopy,it+1,cagescopy,cells)
 			if (b):
 				status = (True,OB)
 		else:
@@ -646,5 +642,31 @@ def solveSudoku9x9(board,proboard,it,cages,cells,t1):
 	#print("it,status",it,status)
 	#print("board",board)
 	return status;
+
+
+def solve_kenken(size,cages):
+	board=[[0]*size]*size
+	l_cages=[]
+	cells=[[0]*size]*size
+	for cage in cages:
+		its=[]
+		vals=[]
+		op=cage[1]
+		V=cage[2]
+		for p in cage[0]:
+			it=i2it(p[0],p[1],size)
+			its.append(it)
+			vals.append(0)
+			cells[p[0]][p[1]]=len(l_cages)
+		l_cage=(vals,int(cage[2]),cage[1],its)
+		l_cages.append(l_cage)
+
+	proboard=probs(board,l_cages,cells)
+
+	(b,OB)=arc.solve(board,proboard,0,l_cages,cells)
+
+
+
+
 
 
