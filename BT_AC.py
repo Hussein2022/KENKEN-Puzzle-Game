@@ -664,6 +664,10 @@ def solve_kenken(size,cages):
 	proboard=probs(board,l_cages,cells)
 
 	(b,OB)=arc.solve(board,proboard,0,l_cages,cells)
+	if(b):
+		return OB
+	else:
+		return None
 
 
 
