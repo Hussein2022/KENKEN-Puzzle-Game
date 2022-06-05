@@ -1,4 +1,4 @@
-import new_arc as arc
+# import new_arc as arc
 import numpy as np
 import time as t
 import copy
@@ -158,6 +158,13 @@ def cage_valid(N,cage,maxv):
 	if((cage[2]=='+')|(cage[2]=='*')):
 		if(N>cage[1]):	
 			return False
+
+	if(cage[2]=='.'):
+		if(N==cage[1]):
+			if(len(cage[0])==1):
+				return True
+			else:
+				return False
 
 	if(cage[2]=='+'):
 		if(N==cage[1]):
@@ -544,6 +551,8 @@ def solve(board,proboard,it,cages,cells):
 
 	if (row > len(board)-1):
 		#print("done")
+		# print(board)
+		# print(proboard)
 		return (True,board);
 
 	# print("board",board)
@@ -555,6 +564,8 @@ def solve(board,proboard,it,cages,cells):
 			# cages=copy.deepcopy(cagescopy)
 			#print("r",it,True)
 			#print("board",OB)
+			# print(OB)
+			# print(proboard)
 			return (True,OB)
 
 
@@ -570,7 +581,10 @@ def solve(board,proboard,it,cages,cells):
 	probcopy= copy.deepcopy(proboard)
 	boardcopy=copy.deepcopy(board)
 	cagescopy=copy.deepcopy(cages)
+	# print(board)
+	# print("enter rep\n 	")
 	rep_update(board,proboard,cages,cells)
+	# print("probs after update",proboard)
 	
 	if type(proboard[row][col]) is list:
 		#print("list")
@@ -580,9 +594,11 @@ def solve(board,proboard,it,cages,cells):
 		#print("board",board)
 		if(len(board)**2-np.count_nonzero(board)==0):
 				#print("no zeros",it)
-				status= True
+				status= (True,board)
 				OB=board
 				#print("board",OB)
+				# print(OB)
+				# print(proboard)
 				return (True,OB)
 		for i in proboard[row][col]:
 
@@ -590,7 +606,7 @@ def solve(board,proboard,it,cages,cells):
 			# if(it==3&i==5):
 			#print("\n\n\n\n\n\n\n\n\n\n\n\n")
 			# print("board",board)
-			# print("probabili/ties",proboard)
+			# print("probabilities",proboard)
 			#print(cages)
 			n = i
 			# probcopy= copy.deepcopy(proboard)
@@ -601,12 +617,14 @@ def solve(board,proboard,it,cages,cells):
 				cagescopy[cells[row][col]][0].remove(0)
 				cagescopy[cells[row][col]][0].append(n)
 			except:
+
 				return (False,None)
 			#print("copy",boardcopy)
 			#print("cages",cages)
 			probcopy=probs(boardcopy,cagescopy,cells)
 			#print("before check",probcopy)
 			if( probcopy[row][col]==0 | probcopy[row][col]==[]):
+
 				return (False,None)
 			# print("probs copy",probcopy)
 			(b,OB)=solve(boardcopy,probcopy,it+1,cagescopy,cells)
@@ -615,7 +633,8 @@ def solve(board,proboard,it,cages,cells):
 				board=copy.copy(boardcopy)
 				proboard=copy.copy(probcopy)
 				# OB=boardcopy
-				
+				# print(OB)
+				# print(proboard)
 				return (True,OB)
 				break
 		#print("break")
@@ -636,38 +655,58 @@ def solve(board,proboard,it,cages,cells):
 		status= (False,None)
 	if(len(board)**2-np.count_nonzero(board)==0):
 		#print("no zeros\n\n\n\n\n\n\n\n\n\n\n\n",it)
-		status= True
+		status= (True,board)
 
 	
 	#print("it,status",it,status)
-	#print("board",board)
+	# print("board",board)
 	return status;
 
 
 def solve_kenken(size,cages):
-	board=[[0]*size]*size
+	board=[ [0] * size for _ in range(size)]
 	l_cages=[]
-	cells=[[0]*size]*size
+	cells=[ [0] * size for _ in range(size)]
+	l_cages=[]
+	# print(cells)
 	for cage in cages:
 		its=[]
 		vals=[]
-		op=cage[1]
+		op1=cage[1]
+		op=''
 		V=cage[2]
+		# print(op1)
+		if(V<0):
+			V=-V
+		if(op1=='.'):
+			op='+'
+		else:
+			op=op1
+		# print(op)
+		# print(len(l_cages))
 		for p in cage[0]:
-			it=i2it(p[0],p[1],size)
+			it=i2it(p[0]-1,p[1]-1,size)
 			its.append(it)
 			vals.append(0)
-			cells[p[0]][p[1]]=len(l_cages)
-		l_cage=(vals,int(cage[2]),cage[1],its)
+			# print(p[0]-1,p[1]-1)
+			# print("cage number",len(l_cages))
+			cells[p[0]-1][p[1]-1]=copy.deepcopy(len(l_cages))
+			# print(cells)
+		# print("\n\n")
+		l_cage=(vals,int(V),op,its)
 		l_cages.append(l_cage)
 
-	proboard=probs(board,l_cages,cells)
+	# print(cages)
+	print(l_cages)
 
-	(b,OB)=arc.solve(board,proboard,0,l_cages,cells)
-	if(b):
-		return OB
-	else:
-		return None
+	proboard=probs(board,l_cages,cells)
+	# print(proboard)
+
+	(b,OB)=solve(board,proboard,0,l_cages,cells)
+	# print("OB is",OB)
+	return OB
+
+
 
 
 
