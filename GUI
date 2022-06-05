@@ -1,0 +1,74 @@
+from tkinter import *
+
+############################################################
+############### window initialization ######################
+
+window = Tk()
+
+icon = PhotoImage(file='img.png')
+window.iconphoto(True, icon)
+
+window.geometry("500x500")  # size of the window
+window.title("KENKEN Puzzle Game")
+
+
+
+##############################################################
+#################Cells Constraction###########################
+def cell_construction(start_boarder_x, start_boarder_y, end_boarder_x, end_boarder_y, kenken_order):
+    cell_size = (end_boarder_x-start_boarder_x)/kenken_order
+
+    for i in range(1, kenken_order+1):
+        for j in range(1, kenken_order+1):
+            Button_init("enter", start_boarder_x + cell_size*i -37, start_boarder_y + cell_size * j-25)
+
+
+###############################################################
+################## Board Construction ########################
+def Board_Construct(start_boarder_x, start_boarder_y, end_boarder_x, end_boarder_y, kenken_order):
+    canvas = Canvas(window, height=500, width=500)
+    canvas.create_rectangle(start_boarder_x, start_boarder_y, end_boarder_x, end_boarder_y)
+
+    # creating the main vertical lines
+    for i in range(1, kenken_order):
+        canvas.create_line(
+            start_boarder_x + (kenken_order - i) * 300 / kenken_order, start_boarder_y,
+            start_boarder_x + (kenken_order - i) * 300 / kenken_order, end_boarder_y
+        )
+
+    # creating the main horizontal lines
+    for i in range(1, kenken_order):
+        canvas.create_line(
+            start_boarder_x, start_boarder_y + (kenken_order - i) * 300 / kenken_order,
+            end_boarder_x, start_boarder_y + (kenken_order - i) * 300 / kenken_order
+        )
+
+    canvas.pack()
+
+
+##########################################################
+##############Buttons creation############################
+def Button_init(name, location_x, location_y):
+    button = Button(window, text=name, foreground="black", bg="gray")
+    button.place(x=location_x, y=location_y)
+
+
+##########################################################
+##############Labels creation############################
+def Label_init(name, location_x, location_y):
+    label = Label(window, text=name, foreground="blue", bg="yellow")
+    label.place(x=location_x, y=location_y)
+
+
+
+
+
+############################################################
+#############calling functions##############################
+Board_Construct(100, 100, 400, 400, 4)
+Button_init("Check solution", 50, 450)
+Label_init("status", 400, 450)
+cell_construction(100, 100, 400, 400, 4)
+
+
+window.mainloop()  # placewindow on computer screen and listen for events
